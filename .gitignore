@@ -1,0 +1,217 @@
+# ============================================================
+#  Digital Banking – Monorepo .gitignore
+#  Covers: Spring Boot backend + React/Vite frontend
+# ============================================================
+
+
+# ──────────────────────────────────────────────────────────
+#  SECRETS & CREDENTIALS  ⚠️  Never commit these
+# ──────────────────────────────────────────────────────────
+# Environment variable files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Application secrets (override with env-specific files)
+backend/src/main/resources/application-prod.yml
+backend/src/main/resources/application-staging.yml
+backend/src/main/resources/application-local.yml
+
+# Keystores & certificates
+backend/src/main/resources/keystore.p12
+backend/src/main/resources/*.p12
+backend/src/main/resources/*.jks
+backend/src/main/resources/*.pfx
+
+# SSL certificates (mkcert local dev certs)
+frontend/ssl/
+*.key
+*.crt
+*.pem
+*.cer
+
+
+# ──────────────────────────────────────────────────────────
+#  SPRING BOOT / MAVEN (Backend)
+# ──────────────────────────────────────────────────────────
+# Maven build output
+backend/target/
+!backend/target/.gitkeep
+
+# Maven wrapper scripts (we ship a local Maven in backend/maven/)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Compiled class files
+*.class
+
+# JAR/WAR packages
+*.jar
+*.war
+*.ear
+*.nar
+
+# Spring Boot DevTools restart trigger
+.spring-boot-devtools.properties
+spring-devtools.properties
+
+
+# ──────────────────────────────────────────────────────────
+#  REACT / VITE / NODE (Frontend)
+# ──────────────────────────────────────────────────────────
+# Dependencies
+frontend/node_modules/
+node_modules/
+
+# Vite production build output
+frontend/dist/
+dist/
+
+# Vite cache
+frontend/.vite/
+.vite/
+
+# npm / yarn / pnpm caches
+.npm/
+.yarn/
+.pnp
+.pnp.js
+.cache/
+
+# Other lock files (keep package-lock.json for reproducible CI)
+yarn.lock
+pnpm-lock.yaml
+
+
+# ──────────────────────────────────────────────────────────
+#  DATABASE FILES
+# ──────────────────────────────────────────────────────────
+# H2 embedded database files (if file-mode DB is used)
+# The backend/data/ directory holds the persistent H2 file-based DB.
+# We track the directory via .gitkeep but exclude the actual DB files.
+backend/data/
+!backend/data/.gitkeep
+*.db
+*.mv.db
+*.trace.db
+*.lock.db
+
+# SQLite
+*.sqlite
+*.sqlite3
+
+# Flyway / Liquibase generated checksum files
+flyway.conf
+
+
+# ──────────────────────────────────────────────────────────
+#  UPLOADS & USER-GENERATED CONTENT
+# ──────────────────────────────────────────────────────────
+# KYC document uploads (runtime data, not source code)
+backend/uploads/
+!backend/uploads/.gitkeep
+
+
+# ──────────────────────────────────────────────────────────
+#  LOG FILES
+# ──────────────────────────────────────────────────────────
+*.log
+*.log.*
+logs/
+backend_runtime.log
+spring.log
+
+
+# ──────────────────────────────────────────────────────────
+#  TESSERACT / OCR DATA
+# ──────────────────────────────────────────────────────────
+# tessdata is large and publicly downloadable
+backend/tessdata/
+
+
+# ──────────────────────────────────────────────────────────
+#  IDE & EDITOR FILES
+# ──────────────────────────────────────────────────────────
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# Eclipse / Spring Tool Suite
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+*.launch
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
+nb-configuration.xml
+.nb-gradle/
+
+# Vim / Emacs swap files
+*.swp
+*.swo
+*~
+
+
+# ──────────────────────────────────────────────────────────
+#  OPERATING SYSTEM FILES
+# ──────────────────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+
+# ──────────────────────────────────────────────────────────
+#  DOCKER & CI/CD
+# ──────────────────────────────────────────────────────────
+docker-compose.override.yml
+docker-compose.local.yml
+
+
+# ──────────────────────────────────────────────────────────
+#  MISC GENERATED / TEMP FILES
+# ──────────────────────────────────────────────────────────
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+# Coverage reports
+coverage/
+*.lcov
+htmlcov/
+.coverage
+
+# SonarQube
+.sonar/
+
+# Temporary directories
+tmp/
+temp/

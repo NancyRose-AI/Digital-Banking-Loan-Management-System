@@ -1,0 +1,39 @@
+﻿# ============================================================
+#  application.yml.example
+#  Copy this file to application-local.yml and fill in values.
+#  NEVER commit application-local.yml or any file with real secrets.
+# ============================================================
+
+spring:
+  application:
+    name: digital-banking
+  datasource:
+    url: jdbc:h2:mem:bankdb           # or jdbc:mysql://localhost:3306/bankdb
+    driverClassName: org.h2.Driver    # or com.mysql.cj.jdbc.Driver
+    username: sa                      # CHANGE ME
+    password: CHANGE_ME               # CHANGE ME
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  sql:
+    init:
+      mode: never
+  h2:
+    console:
+      enabled: true                   # Disable in production
+      path: /h2-console
+
+server:
+  port: 8080
+  ssl:
+    enabled: false
+
+jwt:
+  secret: REPLACE_WITH_A_STRONG_256_BIT_HEX_SECRET   # openssl rand -hex 32
+  expiration: 86400000  # 1 day in ms
+
+razorpay:
+  key-id: REPLACE_WITH_YOUR_RAZORPAY_KEY_ID
+  key-secret: REPLACE_WITH_YOUR_RAZORPAY_KEY_SECRET
