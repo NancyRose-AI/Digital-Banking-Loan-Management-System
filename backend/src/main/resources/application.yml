@@ -5,12 +5,10 @@ spring:
   
   datasource:
     url: ${DATABASE_URL:jdbc:h2:file:~/.digital-banking/bankdb}
-    driverClassName: ${DB_DRIVER:org.h2.Driver}
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:password}
 
   jpa:
-    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
     hibernate:
       ddl-auto: update
     show-sql: true
