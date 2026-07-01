@@ -142,6 +142,8 @@ const CustomerDashboard = () => {
   const [fraudLastUpdated, setFraudLastUpdated] = useState(null);
   const [kycRefresh, setKycRefresh] = useState(0);
   const [showKycForm, setShowKycForm] = useState(false);
+
+  const handleKycUpdate = () => setKycRefresh(prev => prev + 1);
   const { user } = useAuth();
   const navigate = useNavigate();
   const fraudPollRef = useRef(null);
@@ -249,7 +251,7 @@ const CustomerDashboard = () => {
         dashboardData.activeLoanAmount || 0,
         dashboardData.totalPendingEmiAmount || 0,
       ],
-      backgroundColor: ['#34d399', '#7dd3fc', '#fca5a5'], // Mint, Light Blue, Light Pink
+      backgroundColor: ['#34d399', '#7dd3fc', '#fca5a5'],
       hoverOffset: 6,
       borderWidth: 2,
       borderColor: '#ffffff',
@@ -594,7 +596,7 @@ const CustomerDashboard = () => {
 
 
       <Box sx={{ mb: 4 }}>
-        <KycList refreshTrigger={kycRefresh} />
+        <KycList refreshTrigger={kycRefresh} onUpdate={handleKycUpdate} />
       </Box>
 
 

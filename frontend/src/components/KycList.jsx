@@ -3,7 +3,7 @@ import { Box, Typography, TableContainer, Table, TableHead, TableRow, TableCell,
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-const KycList = ({ refreshTrigger }) => {
+const KycList = ({ refreshTrigger, onUpdate }) => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const KycList = ({ refreshTrigger }) => {
     fetchDocuments();
   }, [user, refreshTrigger]);
 
-  // Re-upload handling: single hidden input and state
+
   const [reuploadDoc, setReuploadDoc] = useState(null);
   const reuploadInputRef = useRef(null);
   const handleReuploadClick = (doc) => {
@@ -42,8 +42,10 @@ const KycList = ({ refreshTrigger }) => {
     formData.append('documentType', reuploadDoc.documentType);
     try {
       await api.post('/kyc/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      // Refresh after successful re-upload
+
       fetchDocuments();
+
+      if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Reupload failed', error);
     } finally {
@@ -84,15 +86,15 @@ const KycList = ({ refreshTrigger }) => {
                         {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleString('en-IN') : 'N/A'}
                       </TableCell>
                       <TableCell sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Chip 
-                          label={doc.status} 
-                          size="small" 
-                          color={doc.status === 'VERIFIED' ? 'success' : doc.status === 'REJECTED' ? 'error' : 'warning'} 
+                        <Chip
+                          label={doc.status}
+                          size="small"
+                          color={doc.status === 'VERIFIED' ? 'success' : doc.status === 'REJECTED' ? 'error' : 'warning'}
                           sx={{ fontWeight: 'bold', fontSize: '0.65rem' }}
                         />
-                         {doc.status === 'REJECTED' && (
-                           <Button variant="outlined" size="small" onClick={() => handleReuploadClick(doc)}>Re-upload</Button>
-                         )}
+                        {doc.status === 'REJECTED' && (
+                          <Button variant="outlined" size="small" onClick={() => handleReuploadClick(doc)}>Re-upload</Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
@@ -108,7 +110,7 @@ const KycList = ({ refreshTrigger }) => {
           </Table>
         </TableContainer>
       </Paper>
-        <input type="file" accept="image/*" style={{ display: 'none' }} ref={reuploadInputRef} onChange={handleReuploadFile} />
+      <input type="file" accept="image/*" style={{ display: 'none' }} ref={reuploadInputRef} onChange={handleReuploadFile} />
     </Box>
   );
 };
