@@ -7,6 +7,9 @@ import com.banking.digital.service.KycService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,6 +31,8 @@ public class KycServiceImpl implements KycService {
 
     private final KycDocumentRepository kycDocumentRepository;
     private final UserRepository userRepository;
+    private final Cloudinary cloudinary;
+
 
     private static final String UPLOAD_DIR = "uploads/kyc/";
 
@@ -61,20 +66,21 @@ public class KycServiceImpl implements KycService {
 
         try {
             
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // Upload the file to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "kyc"));
+            String fileUrl = (String) uploadResult.get("secure_url");
 
-            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(filename);
-            Files.copy(file.getInputStream(), filePath);
+            // Create a temporary local copy for OCR processing only
+            File ocrTargetFile = File.createTempFile("kyc_ocr_", "_" + file.getOriginalFilename());
+            Files.write(ocrTargetFile.toPath(), file.getBytes());
 
             
-            File ocrTargetFile = filePath.toFile();
+            // ocrTargetFile is already created above as a temporary file
             File tempPngFile = null;
             try {
-                BufferedImage bufferedImage = ImageIO.read(filePath.toFile());
+                BufferedImage bufferedImage = ImageIO.read(ocrTargetFile);
+
                 if (bufferedImage != null) {
                     tempPngFile = File.createTempFile("kyc_ocr_", ".png");
                     ImageIO.write(bufferedImage, "PNG", tempPngFile);
@@ -151,11 +157,20 @@ public class KycServiceImpl implements KycService {
                     .user(user)
                     .documentType(documentType)
                     .documentNumber(documentNumber)
-                    .fileUrl("/" + UPLOAD_DIR + filename)
+                    .fileUrl(fileUrl)
                     .status(status)
                     .build();
 
             return kycDocumentRepository.save(doc);
+            } finally {
+                // Clean up temporary OCR file
+                if (ocrTargetFile != null && ocrTargetFile.exists()) {
+                    ocrTargetFile.delete();
+                }
+                if (tempPngFile != null && tempPngFile.exists()) {
+                    tempPngFile.delete();
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not store file: " + e.getMessage(), e);
         }
